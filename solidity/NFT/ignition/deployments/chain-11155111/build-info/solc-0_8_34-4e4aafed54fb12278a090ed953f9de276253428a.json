@@ -1,0 +1,54 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_34-4e4aafed54fb12278a090ed953f9de276253428a",
+  "solcVersion": "0.8.34",
+  "solcLongVersion": "0.8.34+commit.80d5c536",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.16.0"
+  },
+  "userSourceNameMap": {
+    "contracts/PriceOracle.sol": "project/contracts/PriceOracle.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "osaka",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": [
+        "project/:@chainlink/contracts/=npm/@chainlink/contracts@1.5.0/"
+      ]
+    },
+    "sources": {
+      "npm/@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// solhint-disable-next-line interface-starts-with-i\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(\n    uint80 _roundId\n  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n"
+      },
+      "project/contracts/PriceOracle.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\r\npragma solidity ^0.8.34;\r\n\r\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\";\r\n\r\n/// @title PriceOracle\r\n/// @notice Provides price feeds for tokens using Chainlink\r\ncontract PriceOracle {\r\n    /// @notice Mapping of token addresses to their Chainlink price feeds\r\n    mapping(address => AggregatorV3Interface) public priceFeeds;\r\n\r\n    /// @notice Address of the contract owner\r\n    address public owner;\r\n\r\n    /// @notice Emitted when a price feed is registered\r\n    event PriceFeedRegistered(address indexed token, address indexed feed);\r\n\r\n    /// @notice Initializes the PriceOracle contract\r\n    constructor() {\r\n        owner = msg.sender;\r\n    }\r\n       /// @notice Registers a price feed for a token\r\n    /// @param token The token address (address(0) for ETH)\r\n    /// @param feed The Chainlink AggregatorV3Interface address\r\n    function registerPriceFeed(address token, address feed)external{\r\n        require(msg.sender==owner,\"Only owner can register price feeds\");\r\n        require(feed!=address(0),\"Invalid feed address\");\r\n\r\n        priceFeeds[token]=AggregatorV3Interface(feed);\r\n        emit PriceFeedRegistered(token, feed);\r\n    }\r\n\r\n        /// @notice Converts a token amount to USD value\r\n    /// @param token The token address (address(0) for ETH)\r\n    /// @param amount The amount of tokens (with token decimals)\r\n    /// @param tokenDecimals The number of decimals for the token\r\n    /// @return usdValue The value in USD (with 8 decimals for Chainlink)\r\n    function convertToUSD(address token,uint256 amount,uint8 tokenDecimals)external view returns(uint256 ) {\r\n        AggregatorV3Interface feed=priceFeeds[token];\r\n        require(address(feed)!=address(0),\"Price feed not found\");\r\n\r\n        (,int256 price,,,)=feed.latestRoundData();\r\n        require(price>0,\"Invalid price\");\r\n\r\n        uint256 usdPrice=uint256(price);\r\n\r\n        if(tokenDecimals>=8){\r\n            return (amount* usdPrice)/(10**(tokenDecimals-8));\r\n        }else{\r\n            return(amount*usdPrice)*(10**(8-tokenDecimals));\r\n        }\r\n    }\r\n        /// @notice Gets the price feed for a token\r\n    /// @param token The token address\r\n    /// @return feed The AggregatorV3Interface address\r\n    function getPriceFeed(address token) external view returns(address){\r\n        return address(priceFeeds[token]);\r\n    }\r\n}\r\n"
+      }
+    }
+  }
+}

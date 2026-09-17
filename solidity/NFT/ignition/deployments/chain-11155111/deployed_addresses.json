@@ -1,0 +1,9 @@
+{
+  "CounterModule#Counter": "0x47eCe248b59847C21072DEb48E59e0A30E94304F",
+  "ProjectDeployment#AuctionUpgradeable": "0x936C2c97e36e5D16CB4607d3Ed24bE9355CD16d5",
+  "ProjectDeployment#AuctionUpgradeableV2": "0x49cdA8Da003335e27C96B9E7277A6Ead684ccDdb",
+  "ProjectDeployment#NFT": "0x782eD6185932Ef918541431754A8CCf21d8EBfd6",
+  "ProjectDeployment#PriceOracle": "0xdD7863F51ccB4C49cEC716BB033b6875ae326b71",
+  "ProjectDeployment#ProxyFactory": "0xE370b370c3E6EaE2490EC5eA9c4EB5d2FAa26ddc",
+  "ProjectDeployment#Auction": "0x34e056dE914126D49D9eCF3DA623EA2b0fcA42a8"
+}
