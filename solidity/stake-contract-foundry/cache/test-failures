@@ -1,0 +1,1 @@
+{"version":1,"failures":[{"contract":"test/MetaNodeStake.t.sol:MetaNodeStakeTest","test":"test_multiplier_clamping_and_reward_shortfall_branches"}]}
